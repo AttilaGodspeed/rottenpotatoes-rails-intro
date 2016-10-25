@@ -11,18 +11,42 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @all_ratings = ['G', 'PG', 'PG-13', 'R', 'NC-17'] #Movie.getRatings
+    #@all_ratings = ['G', 'PG', 'PG-13', 'R', 'NC-17'] #Movie.getRatings
+    @all_ratings = Movie.get_possible_ratings
     
-    if params[:title_sort] == "on"
-      @movies = Movie.order("title asc") 
+    # If user has specified 1 or more ratings, then update session ratings
+    unless params[:ratings].nil?
+      @filtered_ratings = params[:ratings].keys
+      session[:filtered_ratings] = @filtered_ratings
+    end
+    
+    # If the user has specified a sorting mechanism, update session sorting mechanism
+    if params[:sorting_mechanism].nil?
+    # If user didn't specify a sorting mechanism, then we're going to sort by the
+    # sorting mechanism in our sessions
+    else
+      session[:sorting_mechanism] = params[:sorting_mechanism]
+    end
+    
+    @movies = Movie.all
+    if session[:filtered_ratings]
+      @movies = @movies.select{ |movie| session[:filtered_ratings].include? movie.rating }
+    end
+    # title_sort symbol was placed in the params
+    if params[:sorting_mechanism] == "title"
+      #@movies = Movie.order("title asc") 
+      @movies = @movies.sort! {|a,b| a.title <=> b.title}
       @movie_highlight = "hilite" 
-    elsif params[:date_sort] == "on" 
-      @movies = Movie.order("release_date asc")
+    elsif params[:sorting_mechanism] == "release_date" 
+      #@movies = Movie.order("release_date asc")
+      @movies = @movies.sort! {|a,b| a.release_date <=> b.release_date}
       @date_highlight = "hilite" 
     else 
-      # @movies = Movie.all
-      @movies = Movie.where(rating: 'G')
+      @movies = Movie.all
+      # @movies = Movie.where(rating: 'G')
     end
+    #Had to comment out your code, this sould get the ratings
+    @all_ratings = Movie.get_possible_ratings()
   end
 
   def new

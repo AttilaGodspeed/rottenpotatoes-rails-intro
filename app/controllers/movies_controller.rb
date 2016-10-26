@@ -1,5 +1,10 @@
 class MoviesController < ApplicationController
 
+#
+#THE HEORKU APP SITE IS NOT UPDATING
+#10/24/2016
+#
+#
   def movie_params
     params.require(:movie).permit(:title, :rating, :description, :release_date)
   end
@@ -45,7 +50,7 @@ class MoviesController < ApplicationController
       @movies = Movie.all
       # @movies = Movie.where(rating: 'G')
     end
-    #Had to comment out your code, this sould get the ratings
+    #Had to comment out your code, this sould get the ratings (does not as of 24 Oct)
     @all_ratings = Movie.get_possible_ratings()
   end
 

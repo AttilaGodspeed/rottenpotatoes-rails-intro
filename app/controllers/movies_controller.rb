@@ -3,8 +3,10 @@ class MoviesController < ApplicationController
 #
 #THE HEORKU APP SITE IS NOT UPDATING
 #10/24/2016
-#
-#
+#Giving me an apllication error when trying to check Heorku still (10/25/2016)
+#Going to try to get it to work on my Heorku, if I get it to work, I will post link
+#link is posted in Readme
+
   def movie_params
     params.require(:movie).permit(:title, :rating, :description, :release_date)
   end
@@ -18,6 +20,7 @@ class MoviesController < ApplicationController
   def index
     #@all_ratings = ['G', 'PG', 'PG-13', 'R', 'NC-17'] #Movie.getRatings
     @all_ratings = Movie.get_possible_ratings
+    session[:filtered_ratings] = @all_ratings
     
     # If user has specified 1 or more ratings, then update session ratings
     unless params[:ratings].nil?
@@ -30,7 +33,7 @@ class MoviesController < ApplicationController
     # If user didn't specify a sorting mechanism, then we're going to sort by the
     # sorting mechanism in our sessions
     else
-      session[:sorting_mechanism] = params[:sorting_mechanism]
+      session[:sort_by] = params[:sort_by]
     end
     
     @movies = Movie.all
@@ -38,11 +41,11 @@ class MoviesController < ApplicationController
       @movies = @movies.select{ |movie| session[:filtered_ratings].include? movie.rating }
     end
     # title_sort symbol was placed in the params
-    if params[:sorting_mechanism] == "title"
+    if params[:sort_by] == "title"
       #@movies = Movie.order("title asc") 
       @movies = @movies.sort! {|a,b| a.title <=> b.title}
       @movie_highlight = "hilite" 
-    elsif params[:sorting_mechanism] == "release_date" 
+    elsif params[:sort_by] == "release_date" 
       #@movies = Movie.order("release_date asc")
       @movies = @movies.sort! {|a,b| a.release_date <=> b.release_date}
       @date_highlight = "hilite" 

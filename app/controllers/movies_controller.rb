@@ -39,6 +39,9 @@ class MoviesController < ApplicationController
     #  session[:sort_by] = params[:sort_by]
     #end
     
+    # from index
+    # - if session[:filtered_ratings].nil? or session[:filtered_ratings].include? rating
+    
     if !params[:sort_by].nil?
       session[:sort_by] = params[:sort_by]
     end
@@ -46,20 +49,20 @@ class MoviesController < ApplicationController
     @movies = Movie.all
     if !params[:ratings].nil?
     #if !session[:filtered_ratings].nil?
-      #@movies = @movies.select{ |movie| session[:filtered_ratings].include? movie.rating }
-      @movies = @movies.select{ |movie| params[:ratings].keys.include? movie.rating }
+      @movies = @movies.select{ |movie| session[:filtered_ratings].include? movie.rating }
+      #@movies = @movies.select{ |movie| params[:ratings].keys.include? movie.rating }
     end
     
     
     # title_sort symbol was placed in the params
     if params[:sort_by] == "title"
       #@movies = Movie.order("title asc")
-      @movies = @movies.order(" title asc")
-      #@movies = @movies.sort {|a,b| a.title <=> b.title}
+      #@movies = @movies.order("title asc")
+      @movies = @movies.sort {|a,b| a.title <=> b.title}
       @movie_highlight = "hilite" 
     elsif params[:sort_by] == "release_date" 
-      @movies = Movie.order("release_date asc")
-      #@movies = @movies.sort {|a,b| a.release_date <=> b.release_date}
+      #@movies = Movie.order("release_date asc")
+      @movies = @movies.sort {|a,b| a.release_date <=> b.release_date}
       @date_highlight = "hilite" 
     #else 
       #@movies = Movie.all

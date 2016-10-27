@@ -6,6 +6,8 @@ class MoviesController < ApplicationController
 #Giving me an apllication error when trying to check Heorku still (10/25/2016)
 #Going to try to get it to work on my Heorku, if I get it to work, I will post link
 #link is posted in Readme
+#UPDATE: I'm still working on my Heorku. As of 10:45, if you summit the new link in the readme, you will get 107/308 points.
+#I'm still working on it now. So that score should go up by due date
 
   def movie_params
     params.require(:movie).permit(:title, :rating, :description, :release_date)
@@ -24,37 +26,47 @@ class MoviesController < ApplicationController
     
     # If user has specified 1 or more ratings, then update session ratings
     unless params[:ratings].nil?
-      @filtered_ratings = params[:ratings].keys
-      session[:filtered_ratings] = @filtered_ratings
+      #@filtered_ratings = params[:ratings].keys
+      #session[:filtered_ratings] = @filtered_ratings
+      session[:filtered_ratings] = params[:ratings].keys
     end
     
     # If the user has specified a sorting mechanism, update session sorting mechanism
-    if params[:sorting_mechanism].nil?
+    #if params[:sort_by].nil?
     # If user didn't specify a sorting mechanism, then we're going to sort by the
     # sorting mechanism in our sessions
-    else
+    #else
+    #  session[:sort_by] = params[:sort_by]
+    #end
+    
+    if !params[:sort_by].nil?
       session[:sort_by] = params[:sort_by]
     end
-    
+   
     @movies = Movie.all
-    if session[:filtered_ratings]
-      @movies = @movies.select{ |movie| session[:filtered_ratings].include? movie.rating }
+    if !params[:ratings].nil?
+    #if !session[:filtered_ratings].nil?
+      #@movies = @movies.select{ |movie| session[:filtered_ratings].include? movie.rating }
+      @movies = @movies.select{ |movie| params[:ratings].keys.include? movie.rating }
     end
+    
+    
     # title_sort symbol was placed in the params
     if params[:sort_by] == "title"
-      #@movies = Movie.order("title asc") 
-      @movies = @movies.sort! {|a,b| a.title <=> b.title}
+      #@movies = Movie.order("title asc")
+      @movies = @movies.order(" title asc")
+      #@movies = @movies.sort {|a,b| a.title <=> b.title}
       @movie_highlight = "hilite" 
     elsif params[:sort_by] == "release_date" 
-      #@movies = Movie.order("release_date asc")
-      @movies = @movies.sort! {|a,b| a.release_date <=> b.release_date}
+      @movies = Movie.order("release_date asc")
+      #@movies = @movies.sort {|a,b| a.release_date <=> b.release_date}
       @date_highlight = "hilite" 
-    else 
-      @movies = Movie.all
+    #else 
+      #@movies = Movie.all
       # @movies = Movie.where(rating: 'G')
     end
     #Had to comment out your code, this sould get the ratings (does not as of 24 Oct)
-    @all_ratings = Movie.get_possible_ratings()
+    #@all_ratings = Movie.get_possible_ratings()
   end
 
   def new

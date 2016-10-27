@@ -8,6 +8,7 @@ class MoviesController < ApplicationController
 #link is posted in Readme
 #UPDATE: I'm still working on my Heorku. As of 10:45, if you summit the new link in the readme, you will get 107/308 points.
 #I'm still working on it now. So that score should go up by due date
+#Screwed up somewhere, that score is back to zero, going to revert back to an earlier commit
 
   def movie_params
     params.require(:movie).permit(:title, :rating, :description, :release_date)
@@ -57,12 +58,18 @@ class MoviesController < ApplicationController
     # title_sort symbol was placed in the params
     if params[:sort_by] == "title"
       #@movies = Movie.order("title asc")
-      #@movies = @movies.order("title asc")
-      @movies = @movies.sort {|a,b| a.title <=> b.title}
+      if params[:ratings].nil?
+        @movies = @movies.order("title asc")
+      else
+        @movies = @movies.sort {|a,b| a.title <=> b.title}
+      end
       @movie_highlight = "hilite" 
     elsif params[:sort_by] == "release_date" 
-      #@movies = Movie.order("release_date asc")
-      @movies = @movies.sort {|a,b| a.release_date <=> b.release_date}
+      if params[:ratings].nil?
+        @movies = Movie.order("release_date asc")
+      else
+        @movies = @movies.sort {|a,b| a.release_date <=> b.release_date}
+      end
       @date_highlight = "hilite" 
     #else 
       #@movies = Movie.all
